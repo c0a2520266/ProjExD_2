@@ -44,6 +44,11 @@ def main():
         return yoko, tate
     
     def gameover(screen: pg.Surface) -> None:
+        """
+        画面を暗転させ"Game Over"と泣いているこうかとんを表示する関数
+        引数：screen
+        戻り値：なし
+        """
         bg_gameover = pg.Surface((WIDTH, HEIGHT))
         bg_gameover.set_alpha(200)
         gameover_font = pg.font.Font(None, 120)
@@ -56,6 +61,11 @@ def main():
         time.sleep(5)
      
     def init_bb_imgs(bb_imgs, bb_accs) -> tuple[list[pg.Surface], list[int]]:
+        """
+        10段階のサイズ・速度のリストを得るための関数
+        引数：なし
+        戻り値：Surfaceとintのリストのタプル
+        """
         for r in range(1, 11):
             bb_img = pg.Surface((20*r, 20*r))
             pg.draw.circle(bb_img, (255, 0, 0), (10*r, 10*r), 10*r)
@@ -70,6 +80,10 @@ def main():
     bb_rct.center = bb_x, bb_y
 
     def get_kk_imgs() -> dict[tuple[int, int], pg.Surface]:
+        """
+        移動量タプルと対応する画像Surfaceの辞書を返す関数
+        戻り値：移動量タプルと対応する画像Surfaceの辞書
+        """
         kk_dict = {
             (0, 0): pg.transform.rotozoom(kk_img,0 , 1.0),
             (+5, 0): pg.transform.rotozoom(kk_img, -90, 1.0),
