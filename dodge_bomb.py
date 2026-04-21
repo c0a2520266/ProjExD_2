@@ -2,6 +2,7 @@ import os
 import sys
 import pygame as pg
 import random
+import time
 
 
 WIDTH, HEIGHT = 1100, 650
@@ -15,13 +16,8 @@ def main():
     kk_img = pg.transform.rotozoom(pg.image.load("fig/3.png"), 0, 0.9)
     kk_rct = kk_img.get_rect()
     kk_rct.center = 300, 200
-    bb_img = pg.Surface((20, 20))
-    pg.draw.circle(bb_img, (255, 0, 0), (10, 10), 10)
-    bb_img.set_colorkey((0, 0, 0))
-    bb_rct = bb_img.get_rect()
     bb_x = random.randint(0, 1100)
     bb_y = random.randint(0, 650)
-    bb_rct.center = bb_x, bb_y
     vx , vy = +5 , +5
     clock = pg.time.Clock()
     tmr = 0
@@ -57,27 +53,37 @@ def main():
         bg_gameover.blit(gameover_img, [500, 200])
         screen.blit(bg_gameover, [0, 0])
         pg.display.update()
-        pg.time.wait(5000)
+        time.sleep(5)
      
     def init_bb_imgs(bb_imgs, bb_accs) -> tuple[list[pg.Surface], list[int]]:
-        for r in range(1 , 10):
+        for r in range(1, 11):
             bb_img = pg.Surface((20*r, 20*r))
-            pg.draw.circle(bb_img, (255, 0, 0),(10*r, 10*r), 10*r)
+            pg.draw.circle(bb_img, (255, 0, 0), (10*r, 10*r), 10*r)
+            bb_img.set_colorkey((0, 0, 0))
             bb_imgs.append(bb_img)
-            bb_accs = [a for a in range(1, 11)]
+        bb_accs = [a for a in range(1, 11)]
+        return bb_imgs, bb_accs
 
+    bb_imgs, bb_accs = init_bb_imgs([], [])
+    bb_img = bb_imgs[0]
+    bb_rct = bb_img.get_rect()
+    bb_rct.center = bb_x, bb_y
+
+    
 
     while True:
         for event in pg.event.get():
             if event.type == pg.QUIT:
                 return
-            
+
+        # こうかとんと爆弾の当たり判定
         if kk_rct.colliderect(bb_rct):
             gameover(screen)
             return
-        
+
         screen.blit(bg_img, [0, 0])
 
+        # こうかとん移動
         key_lst = pg.key.get_pressed()
         sum_mv = [0, 0]
         for k, delta in DELTA.items():
@@ -89,8 +95,15 @@ def main():
             kk_rct.move_ip(-sum_mv[0], -sum_mv[1])
         screen.blit(kk_img, kk_rct)
 
-
-        bb_rct.move_ip(vx , vy)
+        # 爆弾の大きさ・速度を時間で変化させる
+        bb_idx = min(tmr//500, 9)
+        old_center = bb_rct.center
+        bb_img = bb_imgs[bb_idx]
+        bb_rct = bb_img.get_rect()
+        bb_rct.center = old_center
+        avx = vx * bb_accs[bb_idx]
+        avy = vy * bb_accs[bb_idx]
+        bb_rct.move_ip(avx, avy)
         yoko, tate = check_bound(bb_rct)
         if not yoko:
             vx *= -1
