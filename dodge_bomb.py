@@ -16,7 +16,7 @@ def main():
     kk_rct.center = 300, 200
     clock = pg.time.Clock()
     tmr = 0
-    # 押下キーと移動量の対応関係を表す辞書
+    
     DELTA = {
         pg.K_UP:    (0, -5),
         pg.K_DOWN:  (0, +5),
