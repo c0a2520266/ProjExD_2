@@ -22,6 +22,7 @@ def main():
     bb_x = random.randint(0, 1100)
     bb_y = random.randint(0, 650)
     bb_rct.center = bb_x, bb_y
+    vx , vy = +5 , +5
     clock = pg.time.Clock()
     tmr = 0
     
@@ -33,16 +34,24 @@ def main():
         pg.K_RIGHT: (+5, 0),
     }
 
+    def check_bound(rct: pg.rect) -> tuple[bool, bool]:
+        """
+        引数で与えられたRectが画面内か画面外か判定する関数
+        引数：こうかとんRectかばくだんRect
+        戻り値：横方向、縦方向判定結果（True：画面内。False：画面外）
+        """
+        yoko, tate = True, True
+        if rct.left < 0 or WIDTH < rct.right:
+            yoko = False
+        if rct.top < 0 or HEIGHT < rct.bottom:
+            tate = False
+        return yoko, tate
+
     while True:
         for event in pg.event.get():
             if event.type == pg.QUIT:
                 return
         screen.blit(bg_img, [0, 0])
-
-        
-        bb_rct.move_ip(+5 , +5)
-        screen.blit(bb_img, bb_rct)
-
 
         key_lst = pg.key.get_pressed()
         sum_mv = [0, 0]
@@ -51,11 +60,22 @@ def main():
                 sum_mv[0] += delta[0]
                 sum_mv[1] += delta[1]
         kk_rct.move_ip(sum_mv)
+        if check_bound(kk_rct) != (True, True):
+            kk_rct.move_ip(-sum_mv[0], -sum_mv[1])
         screen.blit(kk_img, kk_rct)
+
+
+        bb_rct.move_ip(vx , vy)
+        yoko, tate = check_bound(bb_rct)
+        if not yoko:
+            vx *= -1
+        if not tate:
+            vy *= -1
+        screen.blit(bb_img, bb_rct)
+
         pg.display.update()
         tmr += 1
         clock.tick(50)
-
 
 if __name__ == "__main__":
     pg.init()
