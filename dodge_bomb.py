@@ -46,6 +46,26 @@ def main():
         if rct.top < 0 or HEIGHT < rct.bottom:
             tate = False
         return yoko, tate
+    
+    def gameover(screen: pg.Surface) -> None:
+        bg_gameover = pg.Surface((WIDTH, HEIGHT))
+        bg_gameover.set_alpha(200)
+        gameover_font = pg.font.Font(None, 120)
+        txt = gameover_font.render("GAME OVER", True, (255, 255, 255))
+        bg_gameover.blit(txt, [550, 325])
+        gameover_img = pg.image.load("fig/8.png")
+        bg_gameover.blit(gameover_img, [500, 200])
+        screen.blit(bg_gameover, [0, 0])
+        pg.display.update()
+        pg.time.wait(5000)
+     
+    def init_bb_imgs(bb_imgs, bb_accs) -> tuple[list[pg.Surface], list[int]]:
+        for r in range(1 , 10):
+            bb_img = pg.Surface((20*r, 20*r))
+            pg.draw.circle(bb_img, (255, 0, 0),(10*r, 10*r), 10*r)
+            bb_imgs.append(bb_img)
+            bb_accs = [a for a in range(1, 11)]
+
 
     while True:
         for event in pg.event.get():
@@ -53,6 +73,7 @@ def main():
                 return
             
         if kk_rct.colliderect(bb_rct):
+            gameover(screen)
             return
         
         screen.blit(bg_img, [0, 0])
