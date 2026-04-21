@@ -69,7 +69,21 @@ def main():
     bb_rct = bb_img.get_rect()
     bb_rct.center = bb_x, bb_y
 
+    def get_kk_imgs() -> dict[tuple[int, int], pg.Surface]:
+        kk_dict = {
+            (0, 0): pg.transform.rotozoom(kk_img,0 , 1.0),
+            (+5, 0): pg.transform.rotozoom(kk_img, -90, 1.0),
+            (0, +5): pg.transform.rotozoom(kk_img, 180, 1.0),
+            (-5, 0): pg.transform.rotozoom(kk_img, 0, 1.0),
+            (0, -5): pg.transform.rotozoom(kk_img, 0, 1.0),
+            (+5, +5): pg.transform.rotozoom(kk_img, -135, 1.0),
+            (+5, -5): pg.transform.rotozoom(kk_img, -45, 1.0),
+            (-5, +5): pg.transform.rotozoom(kk_img, +135, 1.0),
+            (-5, -5): pg.transform.rotozoom(kk_img, +45, 1.0),
+        }
+        return kk_dict
     
+    kk_imgs = get_kk_imgs()
 
     while True:
         for event in pg.event.get():
@@ -90,10 +104,12 @@ def main():
             if key_lst[k]:
                 sum_mv[0] += delta[0]
                 sum_mv[1] += delta[1]
+        mv_tuple = tuple(sum_mv)
+        kk_img_disp = kk_imgs.get(mv_tuple, kk_imgs[(0, 0)])
         kk_rct.move_ip(sum_mv)
         if check_bound(kk_rct) != (True, True):
             kk_rct.move_ip(-sum_mv[0], -sum_mv[1])
-        screen.blit(kk_img, kk_rct)
+        screen.blit(kk_img_disp, kk_rct)
 
         # 爆弾の大きさ・速度を時間で変化させる
         bb_idx = min(tmr//500, 9)
